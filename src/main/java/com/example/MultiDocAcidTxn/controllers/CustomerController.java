@@ -28,9 +28,9 @@ public class CustomerController {
 
 
 
-    @PostMapping("/customer")
+    @PostMapping("/customer/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public String saveCustomer(@RequestBody Customer customer){
+    public String createCustomer(@RequestBody Customer customer){
         customerRepository.save(customer);
         return "customer saved successfully!!!";
     }
@@ -38,7 +38,14 @@ public class CustomerController {
     @GetMapping
     @RequestMapping("/customer/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<Customer> getAllCustomers(@PathVariable String id){
+    public Optional<Customer> getCustomerById(@PathVariable String id){
         return customerRepository.findById(id);
+    }
+
+    @GetMapping
+    @RequestMapping("/customer/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Customer> getAllCustomers(){
+        return customerRepository.findAll();
     }
 }

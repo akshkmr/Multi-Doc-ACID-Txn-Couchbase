@@ -18,6 +18,7 @@ import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,6 +36,28 @@ public class TransactionController {
     MappingCouchbaseConverter mappingCouchbaseConverter;
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
+
+    @PostConstruct
+    private void init(){
+        // Setup test data
+        JsonObject customer1 = JsonObject.create()
+                .put("type", "Customer")
+                .put("name", "Akshay")
+                .put("balance", 100);
+
+        JsonObject customer2 = JsonObject.create()
+                .put("type", "Customer")
+                .put("name", "Raven")
+                .put("balance", 100);
+
+        couchbaseClientFactory.getDefaultCollection().upsert("akshay", customer1);
+
+        logger.info("Upserted sample customer document " + customer1);
+
+        couchbaseClientFactory.getDefaultCollection().upsert("raven", customer2);
+
+        logger.info("Upserted sample customer document " + customer2);
+    }
 
 
     @PostMapping
