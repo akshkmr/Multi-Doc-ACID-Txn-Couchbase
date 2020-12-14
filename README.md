@@ -35,6 +35,8 @@ Application starts a tomcat server on localhost port 8080. Couchbae server initi
 - 404 Not Found: The requested resource cannot be found
 - 500 Internal Server Error: The server encountered an unexpected condition 
 
+![Optional Text](demo.png)
+
 ### Sample JSON for Customer and Account
 
 ##### Customer Account: : 
