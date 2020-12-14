@@ -37,6 +37,8 @@ Application starts a tomcat server on localhost port 8080. Couchbae server initi
 
 ![Optional Text](demo.png)
 
+![Optional Text](couchbase.png)
+
 ### Sample JSON for Customer and Account
 
 ##### Customer Account: : 
