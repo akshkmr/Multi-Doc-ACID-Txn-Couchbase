@@ -37,7 +37,7 @@ import java.util.Arrays;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MultiDocAcidTxnApplication.class)
 @WebAppConfiguration
-public class PostRepositoryTest {
+public class TransactionControllerTest {
 
     private static final Long USER_ONE_ID = 1L;
     private static final Long USER_TWO_ID = 2L;
