@@ -1,6 +1,7 @@
 package com.example.MultiDocAcidTxn.controllers;
 
 import com.couchbase.transactions.Transactions;
+import com.example.MultiDocAcidTxn.exception.CustomerNotFound;
 import com.example.MultiDocAcidTxn.models.Customer;
 import com.example.MultiDocAcidTxn.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class CustomerController {
     @GetMapping
     @RequestMapping("/customer/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<Customer> getCustomerById(@PathVariable String id){
-        return customerRepository.findById(id);
+    public Customer getCustomerById(@PathVariable String id){
+        return customerRepository.findById(id).orElseThrow(() -> new CustomerNotFound());
     }
 
     @GetMapping
