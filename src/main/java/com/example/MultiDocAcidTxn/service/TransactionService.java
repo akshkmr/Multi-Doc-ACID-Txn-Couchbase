@@ -10,14 +10,17 @@ import com.couchbase.transactions.log.LogDefer;
 import com.example.MultiDocAcidTxn.controllers.TransactionController;
 import com.example.MultiDocAcidTxn.exception.CustomerNotFound;
 import com.example.MultiDocAcidTxn.exception.InsufficientFunds;
+import com.example.MultiDocAcidTxn.models.Customer;
 import com.example.MultiDocAcidTxn.models.Transaction;
 import com.example.MultiDocAcidTxn.models.TransactionData;
+import com.example.MultiDocAcidTxn.repositories.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.couchbase.CouchbaseClientFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,6 +31,9 @@ public class TransactionService {
 
     @Autowired
     CouchbaseClientFactory couchbaseClientFactory;
+
+    @Autowired
+    TransactionRepository transactionRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
@@ -49,7 +55,10 @@ public class TransactionService {
                 int customer1Balance = customer1Content.getInt("balance");
                 int customer2Balance = customer2Content.getInt("balance");
 
+                transferId.set(UUID.randomUUID().toString());
+
                 Transaction transaction = Transaction.builder()
+                        .id(transferId.get())
                         .transfererName(customer1Content.get("name").toString())
                         .transfererId(transactionData.getCustomer1Id())
                         .transfereeId(transactionData.getCustomer2Id())
@@ -57,9 +66,7 @@ public class TransactionService {
                         .type("Transfer")
                         .build();
 
-                transferId.set(UUID.randomUUID().toString());
-
-                transactionContext.insert(couchbaseClientFactory.getDefaultCollection(), transferId.get(), transaction);
+                transactionRepository.save(transaction);
 
                 logger.info("In transaction - creating record of transfer with UUID: " + transferId.get());
 
@@ -123,5 +130,9 @@ public class TransactionService {
         }
 
         return transferId.toString();
+    }
+
+    public List<Transaction> findAllCustomerTransactions(String customerName) {
+        return transactionRepository.findTransactionsByCustomerName(customerName);
     }
 }
