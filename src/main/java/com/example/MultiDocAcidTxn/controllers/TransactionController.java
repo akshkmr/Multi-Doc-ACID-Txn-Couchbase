@@ -1,7 +1,7 @@
 package com.example.MultiDocAcidTxn.controllers;
 
 import com.example.MultiDocAcidTxn.exception.InsufficientFunds;
-import com.example.MultiDocAcidTxn.models.Transaction;
+import com.example.MultiDocAcidTxn.models.TransactionData;
 import com.example.MultiDocAcidTxn.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +17,9 @@ public class TransactionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public String transact(@RequestBody Transaction transaction) {
+    public String transact(@RequestBody TransactionData transactionData) {
         try {
-           return transactionService.transact(transaction);
+           return transactionService.transact(transactionData);
         }catch (InsufficientFunds e) {
            return "Insufficient Balance";
         }

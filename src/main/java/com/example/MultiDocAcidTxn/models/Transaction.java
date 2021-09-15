@@ -1,14 +1,14 @@
 package com.example.MultiDocAcidTxn.models;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class Transaction {
-    String  customer1Id;
-    String  customer2Id;
-    Integer amount;
+    private String transfererName;
+    private String transfererId;
+    private String transfereeId;
+    private Integer amount;
+    private String type;
 }

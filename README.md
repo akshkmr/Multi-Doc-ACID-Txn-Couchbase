@@ -27,7 +27,7 @@ Application starts a tomcat server on localhost port 8080. Couchbae server initi
 | GET | /customer/{id} | get customer by id | 
 | GET | /customer/all | get all customers | 
 | POST | /customer/create | create a new customer | 
-| POST | /transaction | perform transaction between 2 user accounts | 
+| POST | /transactionData | perform transactionData between 2 user accounts | 
 
 ### Http Status
 - 200 OK: The request has succeeded

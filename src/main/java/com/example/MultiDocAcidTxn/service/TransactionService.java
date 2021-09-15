@@ -11,6 +11,7 @@ import com.example.MultiDocAcidTxn.controllers.TransactionController;
 import com.example.MultiDocAcidTxn.exception.CustomerNotFound;
 import com.example.MultiDocAcidTxn.exception.InsufficientFunds;
 import com.example.MultiDocAcidTxn.models.Transaction;
+import com.example.MultiDocAcidTxn.models.TransactionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +31,14 @@ public class TransactionService {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
-    public String transact(Transaction transaction) {
+    public String transact(TransactionData transactionData) {
         AtomicReference<String> transferId = new AtomicReference<>();
 
         try {
             transactions.run(transactionContext -> {
                 // getOrError means "fail the transaction if that key does not exist"
-                TransactionGetResult customer1 = transactionContext.get(couchbaseClientFactory.getDefaultCollection(), transaction.getCustomer1Id());
-                TransactionGetResult customer2 = transactionContext.get(couchbaseClientFactory.getDefaultCollection(), transaction.getCustomer2Id());
+                TransactionGetResult customer1 = transactionContext.get(couchbaseClientFactory.getDefaultCollection(), transactionData.getCustomer1Id());
+                TransactionGetResult customer2 = transactionContext.get(couchbaseClientFactory.getDefaultCollection(), transactionData.getCustomer2Id());
 
                 JsonObject customer1Content = customer1.contentAsObject();
                 JsonObject customer2Content = customer2.contentAsObject();
@@ -48,24 +49,25 @@ public class TransactionService {
                 int customer1Balance = customer1Content.getInt("balance");
                 int customer2Balance = customer2Content.getInt("balance");
 
-                // Create a record of the transfer
-                JsonObject transferRecord = JsonObject.create()
-                        .put("from", transaction.getCustomer1Id())
-                        .put("to", transaction.getCustomer2Id())
-                        .put("amount", transaction.getAmount())
-                        .put("type", "Transfer");
+                Transaction transaction = Transaction.builder()
+                        .transfererName(customer1Content.get("name").toString())
+                        .transfererId(transactionData.getCustomer1Id())
+                        .transfereeId(transactionData.getCustomer2Id())
+                        .amount(transactionData.getAmount())
+                        .type("Transfer")
+                        .build();
 
                 transferId.set(UUID.randomUUID().toString());
 
-                transactionContext.insert(couchbaseClientFactory.getDefaultCollection(), transferId.get(), transferRecord);
+                transactionContext.insert(couchbaseClientFactory.getDefaultCollection(), transferId.get(), transaction);
 
                 logger.info("In transaction - creating record of transfer with UUID: " + transferId.get());
 
-                if (customer1Balance >= transaction.getAmount()) {
-                    logger.info("In transaction - customer 1 has sufficient balance, transferring " + transaction.getAmount());
+                if (customer1Balance >= transactionData.getAmount()) {
+                    logger.info("In transaction - customer 1 has sufficient balance, transferring " + transactionData.getAmount());
 
-                    customer1Content.put("balance", customer1Balance - transaction.getAmount());
-                    customer2Content.put("balance", customer2Balance + transaction.getAmount());
+                    customer1Content.put("balance", customer1Balance - transactionData.getAmount());
+                    customer2Content.put("balance", customer2Balance + transactionData.getAmount());
 
                     logger.info("In transaction - changing customer 1's balance to: " + customer1Content.getInt("balance"));
                     logger.info("In transaction - changing customer 2's balance to: " + customer2Content.getInt("balance"));
@@ -73,7 +75,7 @@ public class TransactionService {
                     transactionContext.replace(customer1, customer1Content);
                     transactionContext.replace(customer2, customer2Content);
                 } else {
-                    logger.info("In transaction - customer 1 has insufficient balance to transfer " + transaction.getAmount());
+                    logger.info("In transaction - customer 1 has insufficient balance to transfer " + transactionData.getAmount());
 
                     // Rollback is automatic on a thrown exception.  This will also cause the transaction to fail
                     // with a TransactionFailed containing this InsufficientFunds as the getCause() - see below.
@@ -108,8 +110,8 @@ public class TransactionService {
         }
 
         // Post-transaction, see the results:
-        JsonObject customer1 = couchbaseClientFactory.getDefaultCollection().get(transaction.getCustomer1Id()).contentAsObject();
-        JsonObject customer2 = couchbaseClientFactory.getDefaultCollection().get(transaction.getCustomer2Id()).contentAsObject();
+        JsonObject customer1 = couchbaseClientFactory.getDefaultCollection().get(transactionData.getCustomer1Id()).contentAsObject();
+        JsonObject customer2 = couchbaseClientFactory.getDefaultCollection().get(transactionData.getCustomer2Id()).contentAsObject();
 
         logger.info("After transaction - got customer 1's details: " + customer1);
         logger.info("After transaction - got customer 2's details: " + customer2);

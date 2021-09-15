@@ -2,7 +2,7 @@ package com.example.MultiDocAcidTxn;
 
 
 import com.example.MultiDocAcidTxn.models.Customer;
-import com.example.MultiDocAcidTxn.models.Transaction;
+import com.example.MultiDocAcidTxn.models.TransactionData;
 import com.example.MultiDocAcidTxn.repositories.CustomerRepository;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -37,7 +37,7 @@ import java.util.Arrays;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MultiDocAcidTxnApplication.class)
 @WebAppConfiguration
-public class TransactionControllerTest {
+public class TransactionDataControllerTest {
 
     private static final Long USER_ONE_ID = 1L;
     private static final Long USER_TWO_ID = 2L;
@@ -131,22 +131,22 @@ public class TransactionControllerTest {
     }
 
     protected void executeGet(Integer id) throws Exception {
-        Transaction transaction = Transaction.builder().customer1Id("user::1").customer2Id("user::" + id).amount(10).build();
-        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transaction)));
+        TransactionData transactionData = TransactionData.builder().customer1Id("user::1").customer2Id("user::" + id).amount(10).build();
+        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transactionData)));
     }
 
     @Test()
     public void postTransactions() throws Exception{
-        Transaction transaction1 = Transaction.builder().customer1Id("user::1").customer2Id("user::" + "2").amount(10).build();
-        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transaction1)));
-        Transaction transaction2 = Transaction.builder().customer1Id("user::1").customer2Id("user::" + "3").amount(10).build();
-        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transaction2)));
-        Transaction transaction3 = Transaction.builder().customer1Id("user::1").customer2Id("user::" + "4").amount(10).build();
-        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transaction3)));
-        Transaction transaction4 = Transaction.builder().customer1Id("user::1").customer2Id("user::" + "5").amount(10).build();
-        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transaction4)));
-        Transaction transaction5 = Transaction.builder().customer1Id("user::1").customer2Id("user::" + "6").amount(10).build();
-        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transaction5)));
+        TransactionData transactionData1 = TransactionData.builder().customer1Id("user::1").customer2Id("user::" + "2").amount(10).build();
+        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transactionData1)));
+        TransactionData transactionData2 = TransactionData.builder().customer1Id("user::1").customer2Id("user::" + "3").amount(10).build();
+        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transactionData2)));
+        TransactionData transactionData3 = TransactionData.builder().customer1Id("user::1").customer2Id("user::" + "4").amount(10).build();
+        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transactionData3)));
+        TransactionData transactionData4 = TransactionData.builder().customer1Id("user::1").customer2Id("user::" + "5").amount(10).build();
+        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transactionData4)));
+        TransactionData transactionData5 = TransactionData.builder().customer1Id("user::1").customer2Id("user::" + "6").amount(10).build();
+        mockMvc.perform(post("/transaction").contentType(CONTENT_TYPE).content(json(transactionData5)));
 
         mockMvc.perform(get("/customer/" + USER_ONE_KEY)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.balance", Matchers.is(50)));
