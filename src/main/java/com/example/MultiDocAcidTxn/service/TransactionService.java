@@ -10,7 +10,6 @@ import com.couchbase.transactions.log.LogDefer;
 import com.example.MultiDocAcidTxn.controllers.TransactionController;
 import com.example.MultiDocAcidTxn.exception.CustomerNotFound;
 import com.example.MultiDocAcidTxn.exception.InsufficientFunds;
-import com.example.MultiDocAcidTxn.models.Customer;
 import com.example.MultiDocAcidTxn.models.Transaction;
 import com.example.MultiDocAcidTxn.models.TransactionData;
 import com.example.MultiDocAcidTxn.repositories.TransactionRepository;
@@ -133,6 +132,10 @@ public class TransactionService {
     }
 
     public List<Transaction> findAllCustomerTransactions(String customerName) {
-        return transactionRepository.findTransactionsByCustomerName(customerName);
+        return transactionRepository.findAllCustomerTransactions(customerName);
+    }
+
+    public List<Transaction> findRecentCustomerTransactions(String customerName) {
+        return transactionRepository.findRecentCustomerTransactions(customerName);
     }
 }

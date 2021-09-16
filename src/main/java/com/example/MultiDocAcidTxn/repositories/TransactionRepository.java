@@ -9,6 +9,9 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends CouchbaseRepository<Transaction, String> {
-    @Query("#{#n1ql.selectEntity} WHERE #{#n1ql.filter} AND `type`='Transfer'")
-    List<Transaction> findTransactionsByCustomerName(String name);
+    @Query("#{#n1ql.selectEntity} WHERE #{#n1ql.filter} AND `type`='Transfer' AND `transfererName` = $1")
+    List<Transaction> findAllCustomerTransactions(String name);
+
+    @Query("#{#n1ql.selectEntity} WHERE #{#n1ql.filter} AND `type`='Transfer' AND `transfererName` = $1 LIMIT 5")
+    List<Transaction> findRecentCustomerTransactions(String name);
 }
